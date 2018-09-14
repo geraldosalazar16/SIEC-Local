@@ -1,1 +1,0 @@
-En esta carpeta deben ir las libreras comúnes a todo el front-end. Además deberán ir los archivos "apiserver" para conectar al back-end

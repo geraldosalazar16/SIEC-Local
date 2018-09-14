@@ -1,7 +1,0 @@
-[05-Jun-2018 20:32:05 UTC] PHP Fatal error:  Uncaught exception 'SendGrid\Exception' with message '{"errors":["The provided authorization grant is invalid, expired, or revoked"],"message":"error"}' in /home/sistemainterno/public_html/api.imnc/imnc/common/sendgridlib/lib/SendGrid.php:120
-Stack trace:
-#0 /home/sistemainterno/public_html/api.imnc/imnc/common/conn-sendgrid.php(52): SendGrid->send(Object(SendGrid\Email))
-#1 /home/sistemainterno/public_html/api.imnc/imnc/ver_expedientes/guardarCatDocumento/index.php(30): MailError->send('SG_SECTORES', '/home/sistemain...', 'Column 'DESCRIP...', 'INSERT INTO "CA...', 'polo@codeart.mx')
-#2 /home/sistemainterno/public_html/api.imnc/imnc/ver_expedientes/guardarCatDocumento/index.php(59): valida_error_medoo_and_die()
-#3 {main}
-  thrown in /home/sistemainterno/public_html/api.imnc/imnc/common/sendgridlib/lib/SendGrid.php on line 120
