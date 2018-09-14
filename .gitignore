@@ -1,6 +1,2 @@
-/.vscode/
-/img/
-/xampp/
-/api.imnc/common/
-/imnc/common/
-
+imnc/common
+.vscode/

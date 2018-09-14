@@ -1,1 +1,1 @@
-var global_apiserver = 'http://localhost/api.imnc/imnc';
+var global_apiserver = 'http://prueba/api.imnc/imnc';
