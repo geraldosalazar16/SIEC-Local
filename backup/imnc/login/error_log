@@ -1,0 +1,2 @@
+
+[14-Sep-2018 16:53:52 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/sistemai/public_html/imnc/login/index.php:18) in /home/sistemai/public_html/imnc/login/index.php on line 37
