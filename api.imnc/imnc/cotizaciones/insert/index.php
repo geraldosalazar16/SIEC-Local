@@ -1,15 +1,15 @@
 <?php  
-//include  '../../common/conn-apiserver.php';  
-//include  '../../common/conn-medoo.php';  
+include  '../../common/conn-apiserver.php';  
+include  '../../common/conn-medoo.php';  
 //include  '../../common/conn-sendgrid.php'; 
 
 
-
+/*
 include  '../../ex_common/query.php';
 include 'funciones.php';
 include '../../ex_common/archivos.php';
+*/
 
-/*
 function valida_parametro_and_die($parametro, $mensaje_error){ 
 	$parametro = "" . $parametro; 
 	if ($parametro == "") { 
@@ -25,12 +25,11 @@ function valida_error_medoo_and_die(){
 	if ($database->error()[2]) { 
 		$respuesta["resultado"]="error"; 
 		$respuesta["mensaje"]="Error al ejecutar script: " . $database->error()[2]; 
-		print_r(json_encode($respuesta)); 
-		$mailerror->send("COTIZACIONES", getcwd(), $database->error()[2], $database->last_query(), "polo@codeart.mx"); 
+		print_r(json_encode($respuesta));
 		die(); 
 	} 
 } 
-*/
+
 $respuesta=array(); 
 $json = file_get_contents("php://input"); 
 $objeto = json_decode($json); 
@@ -100,10 +99,10 @@ $id = $database->insert("COTIZACIONES", [
 valida_error_medoo_and_die(); 
 $respuesta["resultado"]="ok"; 
 $respuesta["id"]=$id; 
-
+/*
 creacion_expediente_registro($id,4,$rutaExpediente, $database);
 crea_instancia_expedientes_registro($id,4,$database);
-
+*/
 
 print_r(json_encode($respuesta)); 
 ?> 

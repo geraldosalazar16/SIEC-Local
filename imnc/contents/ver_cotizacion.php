@@ -149,10 +149,10 @@
                     <h2><b>Trámite: {{obj_cotizacion_tramite.ETAPA}}</b></h2>
                   </li>
                   <li id="lbTotalSitios">
-                    Total de sitios en cotización: {{obj_cotizacion_tramite.TOTAL_SITIOS}}
+                    Total de sitios en cotización: {{obj_cotizacion_tramite.COUNT_SITIOS.TOTAL_SITIOS}}
                   </li>
                   <li id="lbSitiosVisitar">
-                    Sitios a visitar: {{obj_cotizacion_tramite.COUNT_SITIOS.TOTAL_SITIOS}} de {{obj_cotizacion_tramite.COUNT_SITIOS.SITIOS_A_VISITAR}}
+                    Sitios a visitar: {{obj_cotizacion_tramite.COUNT_SITIOS.SITIOS_A_VISITAR}} de {{obj_cotizacion_tramite.COUNT_SITIOS.TOTAL_SITIOS}}
                   </li>
                   <li id="lbRestriccion">
                     {{obj_cotizacion_tramite.COUNT_SITIOS.RESTRICCIONES_SITIOS}}
@@ -212,7 +212,6 @@
                 <th class="column-title">#</th>
                 <th class="column-title">Nombre del sitio</th>
                 <th class="column-title">Detalles</th>
-                <th class="column-title">No. de empleados</th>
                 <th class="column-title">Días de auditoría</th>
                 <th class="column-title">Por visitar</th>
                 <th class="column-title"></th>
@@ -227,6 +226,7 @@
                   Actividad : {{sitios_cotizacion.ACTIVIDAD }}
                 </td>
                 <td>
+                  Total de empleados: {{sitios_cotizacion.TOTAL_EMPLEADOS}}<br>
                   # de empleados para certificación: {{sitios_cotizacion.NUMERO_EMPLEADOS_CERTIFICACION}} <br>
                   Cantidad de turnos: {{sitios_cotizacion.CANTIDAD_TURNOS}} <br>
                   Cantidad de procesos: {{sitios_cotizacion.CANTIDAD_DE_PROCESOS}} <br>
@@ -236,11 +236,15 @@
                   Factor de Ampliación :  {{sitios_cotizacion.FACTOR_AMPLIACION}}%<br>
                   Justificación :  {{sitios_cotizacion.JUSTIFICACION}}
                 </td>
-                <td>{{sitios_cotizacion.TOTAL_EMPLEADOS}}</td>
                 <td>
+                  <p ng-if="sitios_cotizacion.ETAPA == 'NO_E1'">
                   Tabla: <b>{{sitios_cotizacion.DIAS_AUDITORIA}}</b><br>
                   Factor de reducción y ampliación:<b>{{sitios_cotizacion.DIAS_AUDITORIA_RED}}</b><br>
                   Factor de ajuste por vigilancia o renovación:<b>{{sitios_cotizacion.DIAS_AUDITORIA_SUBTOTAL}}</b>
+                  </p>
+                  <p ng-if="sitios_cotizacion.ETAPA == 'E1'">
+                  Total días auditor: <b>{{sitios_cotizacion.DIAS_AUDITORIA}}</b><br>
+                  </p>
                 </td>
                 <td>
                   <input type="checkbox" class="flat" ng-click="actualiza_sitio_seleccionado(sitios_cotizacion.ID)" 

@@ -4,6 +4,7 @@
 
   $( window ).load(function() {
   var mod = true;
+  onCalendar();
   draw_calendario();
   draw_perfil();
   draw_domicilios_y_califs(); 
@@ -1066,11 +1067,45 @@ function removeOptions(selectbox)
         }
         
       });
+      //Agrego los eventos
+      $.getJSON( global_apiserver + "/personal_tecnico_eventos/getByIdPersonalTecnico/?id="+global_id_personal_tecnico, function( response ) {
+        $.each(response, function( indice, evento ) {
+          var f_ini= evento.FECHA_INICIO;
+          var anhio_ini = parseInt(f_ini.substring(0,4));
+          var mes_ini = parseInt(f_ini.substring(5,7))-1; //En js los meses comienzan en 0
+          var dia_ini = parseInt(f_ini.substring(8,10));
+
+          var f_fin= evento.FECHA_FIN;
+          var anhio_fin = parseInt(f_ini.substring(0,4));
+          var mes_fin = parseInt(f_ini.substring(5,7))-1; //En js los meses comienzan en 0
+          var dia_fin = parseInt(f_ini.substring(8,10));
+  
+          eventos.push(
+            {
+              title: 'Evento: ' + evento.EVENTO,
+              start: new Date(anhio_ini, mes_ini, dia_ini, 07, 0),
+              end: new Date(anhio_fin, mes_fin, dia_fin, 18, 30),
+              allDay: false
+            }
+          )         
+        });
+      });
       var calendar = $('#calendar').fullCalendar({
+        customButtons: {
+          newEvent: {
+              text: '+ Nuevo Evento',
+              click: function() { 
+                $("#btnGuardarEvento").attr("accion","insertar");
+                $("#modalCrearEventoTitulo").html("Insertar nuevo evento");
+                clear_modal_insertar_evento();
+                $("#modalCrearEvento").modal("show");
+              }
+          }
+        },
         header: {
           left: 'prev,next today',
           center: 'title',
-          right: 'month,agendaWeek,agendaDay'
+          right: 'month,agendaWeek,agendaDay,newEvent'
         },
         minTime:"07:00:00",
         allDaySlot:false,
@@ -1083,3 +1118,46 @@ function removeOptions(selectbox)
       
     });
   }
+  function clear_modal_insertar_evento() {
+    $('evento').val("");
+    $('fecha_inicio').val("");
+    $('fecha_fin').val("");
+  }
+  function onCalendar() {
+    $(document).ready(function () {
+        $('#fecha_inicio').datepicker({
+            dateFormat: "mm/dd/yy",
+            minDate: "+0D"
+        }).css("display", "inline-block");
+        $('#fecha_fin').datepicker({
+          dateFormat: "yyyy/mm/dd",
+          minDate: "+0D"
+      }).css("display", "inline-block");
+    });  
+  }
+  $("#btnGuardarEvento" ).click(function() {
+    var accion = $("#btnGuardarDomicilio").attr("accion");
+    if (accion == 'insertar') {
+      var nuevo_evento = {
+        ID_PERSONAL_TECNICO:parseInt(global_id_personal_tecnico),
+        EVENTO: $("#evento").val(),
+        FECHA_INICIO: $("#fecha_inicio").val(),
+        FECHA_FIN: $("#fecha_fin").val(),
+        ID_USUARIO:sessionStorage.getItem("id_usuario")
+      };
+      $.post(global_apiserver + "/personal_tecnico_eventos/insert/", JSON.stringify(nuevo_evento), function(respuesta){
+          respuesta = JSON.parse(respuesta);
+          if (respuesta.resultado == "ok") {
+            $("#modalCrearEvento").modal("hide");
+            notify("Éxito", "Se ha insertado un nuevo evento", "success");
+            draw_calendario(); 
+          }
+          else
+          {
+             notify("Error", respuesta.mensaje, "error");
+          }
+      });
+    } else {
+
+    }
+  });

@@ -96,6 +96,7 @@ app.controller("cotizador_controller", ['$scope','$window', '$http','$document',
   }
 
   // Pinta tabla de cotizaciones
+  //Entry point con ng-init en la vista
   $scope.despliega_cotizaciones = function () {
     $scope.fill_select_prospectos("");
     $scope.fill_select_clientes("");
