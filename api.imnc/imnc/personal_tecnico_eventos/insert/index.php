@@ -38,55 +38,23 @@ $objeto = json_decode($json); // Lo transforma de JSON a un objeto de PHP
 $ID_PERSONAL_TECNICO = $objeto->ID_PERSONAL_TECNICO;
 valida_parametro_and_die($ID_PERSONAL_TECNICO, "Falta ID de personal técnico");
 
-$NOMBRE_DOMICILIO = $objeto->NOMBRE_DOMICILIO;
-valida_parametro_and_die($NOMBRE_DOMICILIO, "Es necesario capturar un nombre del domicilio");
-
-$CALLE = $objeto->CALLE;
-valida_parametro_and_die($CALLE, "Es necesario capturar la calle");
-
-$NUMERO_EXTERIOR = $objeto->NUMERO_EXTERIOR;
-valida_parametro_and_die($NUMERO_EXTERIOR, "Es necesario capturar un No. exterior");
-
-$NUMERO_INTERIOR = $objeto->NUMERO_INTERIOR; // opcional
-
-$COLONIA_BARRIO = $objeto->COLONIA_BARRIO;
-valida_parametro_and_die($COLONIA_BARRIO, "Es necesario capturar la colonia o barrio");
-
-$DELEGACION_MUNICIPIO = $objeto->DELEGACION_MUNICIPIO;
-valida_parametro_and_die($DELEGACION_MUNICIPIO, "Es necesario capturar la delegación o municipio");
-
-$ENTIDAD_FEDERATIVA = $objeto->ENTIDAD_FEDERATIVA;
-valida_parametro_and_die($ENTIDAD_FEDERATIVA, "Es necesario capturar la entidad federativa");
-
-$CP = $objeto->CP;
-valida_parametro_and_die($CP, "Es necesario capturar el código postal");
-if (!is_numeric($CP) || intval($CP) < 0) {
-	imprime_error_and_die("Verifica que el código postal sea un número y sea mayor o igual a cero");
-}
-
-$PAIS = $objeto->PAIS;
-valida_parametro_and_die($PAIS, "Es necesario capturar el país");
+$EVENTO = $objeto->EVENTO;
+valida_parametro_and_die($EVENTO, "Es necesario capturar un evento");
 
 $FECHA_INICIO = $objeto->FECHA_INICIO;
 valida_parametro_and_die($FECHA_INICIO, "Es necesario capturar una fecha de inicio");
-if (strlen($FECHA_INICIO) != 8) {
-	imprime_error_and_die("Verifica el formato de la fecha de inicio");
-}
-$anhio = intval(substr($FECHA_INICIO,0,4));
-$mes = intval(substr($FECHA_INICIO,4,2));
-$dia = intval(substr($FECHA_INICIO,6,2));
-if (!checkdate($mes , $dia, $anhio)){
-	imprime_error_and_die("La fecha de inicio no es válida");
-}
 
 $FECHA_FIN = $objeto->FECHA_FIN;
 valida_parametro_and_die($FECHA_FIN, "Es necesario capturar una fecha de fin");
-if (strlen($FECHA_FIN) != 8) {
-	imprime_error_and_die("Verifica el formato de la fecha de fin");
+$anhio = intval(substr($FECHA_INICIO,0,4));
+$mes = intval(substr($FECHA_INICIO,5,2));
+$dia = intval(substr($FECHA_INICIO,8,2));
+if (!checkdate($mes , $dia, $anhio)){
+	imprime_error_and_die("La fecha de inicio no es válida");
 }
 $anhio = intval(substr($FECHA_FIN,0,4));
-$mes = intval(substr($FECHA_FIN,4,2));
-$dia = intval(substr($FECHA_FIN,6,2));
+$mes = intval(substr($FECHA_FIN,5,2));
+$dia = intval(substr($FECHA_FIN,8,2));
 if (!checkdate($mes , $dia, $anhio)){
 	imprime_error_and_die("La fecha de fin no es válida");
 }
@@ -100,22 +68,16 @@ valida_parametro_and_die($ID_USUARIO_CREACION,"Falta ID de USUARIO");
 $FECHA_CREACION = date("Ymd");
 $HORA_CREACION = date("His");
 
-$id = $database->insert("PERSONAL_TECNICO_DOMICILIOS", [
+$id = $database->insert("PERSONAL_TECNICO_EVENTOS", [
 	"ID_PERSONAL_TECNICO"=>$ID_PERSONAL_TECNICO,
-	"NOMBRE_DOMICILIO" => $NOMBRE_DOMICILIO,
-	"CALLE" => $CALLE,
-	"NUMERO_EXTERIOR" => $NUMERO_EXTERIOR,
-	"NUMERO_INTERIOR" => $NUMERO_INTERIOR,
-	"COLONIA_BARRIO" => $COLONIA_BARRIO,
-	"DELEGACION_MUNICIPIO" => $DELEGACION_MUNICIPIO,
-	"ENTIDAD_FEDERATIVA" => $ENTIDAD_FEDERATIVA,
-	"CP" => $CP,
-	"PAIS" => $PAIS,
-	"FECHA_INICIO" => $FECHA_INICIO,
-	"FECHA_FIN" => $FECHA_FIN,
-	"FECHA_CREACION" => $FECHA_CREACION,
-	"HORA_CREACION" => $HORA_CREACION,
-	"ID_USUARIO_CREACION" => $ID_USUARIO_CREACION
+	"EVENTO" => $EVENTO,
+    "FECHA_INICIO" => $FECHA_INICIO,
+    "HORA_INICIO" => "7:00",
+    "FECHA_FIN" => $FECHA_FIN,
+    "HORA_FIN" => "18:30",
+	"FECHA_MODIFICACION" => $FECHA_CREACION,
+	"HORA_MODIFICACION" => $HORA_CREACION,
+	"USUARIO_MODIFICACION" => $ID_USUARIO_CREACION
 ]);
 valida_error_medoo_and_die();
 

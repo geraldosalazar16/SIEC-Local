@@ -51,7 +51,7 @@
         delay: 2500
     });
   }
-
+  
   function listener_tabs_change(){
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       var target = $(e.target).attr("href") // activated tab
@@ -1054,6 +1054,7 @@ function removeOptions(selectbox)
             var mes_ini = parseInt(f_ini.substring(4,6))-1; //En js los meses comienzan en 0
             var dia_ini = parseInt(f_ini.substring(6,8));
 
+            const descripcion = 'Auditoría: ' + objAuditoria.ID_SG_AUDITORIA + " (" + objAuditoria.ID_TIPO_SERVICIO + ")";
             eventos.push(
               {
                 title: 'Auditoría: ' + objAuditoria.ID_SG_AUDITORIA + " (" + objAuditoria.ID_TIPO_SERVICIO + ")",
@@ -1061,6 +1062,8 @@ function removeOptions(selectbox)
                 end: new Date(anhio_ini, mes_ini, dia_ini, 18, 30),
                 allDay: false,
                 url: './?pagina=sg_tipos_servicio&id_serv_cli_et='+objAuditoria.ID_SERVICIO_CLIENTE_ETAPA +'&sg_tipo_servicio='+objAuditoria.ID_SG_TIPO_SERVICIO,
+                descripcion: descripcion,
+                tipo: 'Auditoría'
               }
             )
           } 
@@ -1076,46 +1079,56 @@ function removeOptions(selectbox)
           var dia_ini = parseInt(f_ini.substring(8,10));
 
           var f_fin= evento.FECHA_FIN;
-          var anhio_fin = parseInt(f_ini.substring(0,4));
-          var mes_fin = parseInt(f_ini.substring(5,7))-1; //En js los meses comienzan en 0
-          var dia_fin = parseInt(f_ini.substring(8,10));
+          var anhio_fin = parseInt(f_fin.substring(0,4));
+          var mes_fin = parseInt(f_fin.substring(5,7))-1; //En js los meses comienzan en 0
+          var dia_fin = parseInt(f_fin.substring(8,10));
   
+          const descripcion = 'Evento: ' + evento.EVENTO;
+          const tipo = 'Evento';
+
+          const start = new Date(anhio_ini, mes_ini, dia_ini, 07, 0);
+          const end = new Date(anhio_fin, mes_fin, dia_fin, 18, 30);
           eventos.push(
             {
               title: 'Evento: ' + evento.EVENTO,
-              start: new Date(anhio_ini, mes_ini, dia_ini, 07, 0),
-              end: new Date(anhio_fin, mes_fin, dia_fin, 18, 30),
-              allDay: false
+              start: start,
+              end: end,
+              color: '#8AECFA',
+              allDay: false,
+              descripcion: descripcion,
+              tipo: tipo
             }
           )         
         });
-      });
-      var calendar = $('#calendar').fullCalendar({
-        customButtons: {
-          newEvent: {
-              text: '+ Nuevo Evento',
-              click: function() { 
-                $("#btnGuardarEvento").attr("accion","insertar");
-                $("#modalCrearEventoTitulo").html("Insertar nuevo evento");
-                clear_modal_insertar_evento();
-                $("#modalCrearEvento").modal("show");
-              }
+        var calendar = $('#calendar').fullCalendar({
+          customButtons: {
+            newEvent: {
+                text: '+ Nuevo Evento',
+                click: function() { 
+                  $("#btnGuardarEvento").attr("accion","insertar");
+                  $("#modalCrearEventoTitulo").html("Insertar nuevo evento");
+                  clear_modal_insertar_evento();
+                  $("#modalCrearEvento").modal("show");
+                }
+            }
+          },
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay,newEvent'
+          },
+          minTime:"07:00:00",
+          allDaySlot:false,
+          selectable: false,
+          selectHelper: true,
+          editable: false,
+          eventBackgroundColor:"#3e5a23",
+          events: eventos,
+          eventMouseover: function( event, jsEvent, view ) { 
+            notify(event.tipo,event.descripcion,'info')
           }
-        },
-        header: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'month,agendaWeek,agendaDay,newEvent'
-        },
-        minTime:"07:00:00",
-        allDaySlot:false,
-        selectable: false,
-        selectHelper: true,
-        editable: false,
-        eventBackgroundColor:"#3e5a23",
-        events: eventos
-      });
-      
+        });
+      });      
     });
   }
   function clear_modal_insertar_evento() {
@@ -1126,24 +1139,24 @@ function removeOptions(selectbox)
   function onCalendar() {
     $(document).ready(function () {
         $('#fecha_inicio').datepicker({
-            dateFormat: "mm/dd/yy",
+            dateFormat: "yy/mm/dd",
             minDate: "+0D"
         }).css("display", "inline-block");
         $('#fecha_fin').datepicker({
-          dateFormat: "yyyy/mm/dd",
+          dateFormat: "yy/mm/dd",
           minDate: "+0D"
       }).css("display", "inline-block");
     });  
   }
   $("#btnGuardarEvento" ).click(function() {
-    var accion = $("#btnGuardarDomicilio").attr("accion");
+    var accion = $("#btnGuardarEvento").attr("accion");
     if (accion == 'insertar') {
       var nuevo_evento = {
         ID_PERSONAL_TECNICO:parseInt(global_id_personal_tecnico),
         EVENTO: $("#evento").val(),
         FECHA_INICIO: $("#fecha_inicio").val(),
         FECHA_FIN: $("#fecha_fin").val(),
-        ID_USUARIO:sessionStorage.getItem("id_usuario")
+        ID_USUARIO:parseInt(sessionStorage.getItem("id_usuario"))
       };
       $.post(global_apiserver + "/personal_tecnico_eventos/insert/", JSON.stringify(nuevo_evento), function(respuesta){
           respuesta = JSON.parse(respuesta);
