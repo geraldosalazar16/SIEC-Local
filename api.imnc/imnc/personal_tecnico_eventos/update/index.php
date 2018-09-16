@@ -1,5 +1,6 @@
 <?php 
 include  '../../common/conn-apiserver.php'; 
+
 include  '../../common/conn-medoo.php'; 
 include  '../../common/conn-sendgrid.php'; 
 
@@ -35,11 +36,11 @@ $respuesta=array();
 $json = file_get_contents('php://input'); //Obtiene lo que se envía vía POST
 $objeto = json_decode($json); // Lo transforma de JSON a un objeto de PHP
 
+$ID = $objeto->ID;
+valida_parametro_and_die($ID, "Es necesario capturar un id de evento");
+
 $EVENTO = $objeto->EVENTO;
 valida_parametro_and_die($EVENTO, "Es necesario capturar un evento");
-
-$ID_PERSONAL_TECNICO = $objeto->ID_PERSONAL_TECNICO;
-valida_parametro_and_die($ID_PERSONAL_TECNICO, "Falta ID de personal técnico");
 
 $FECHA_INICIO = $objeto->FECHA_INICIO;
 valida_parametro_and_die($FECHA_INICIO, "Es necesario capturar una fecha de inicio");
@@ -68,8 +69,7 @@ valida_parametro_and_die($ID_USUARIO_CREACION,"Falta ID de USUARIO");
 $FECHA_CREACION = date("Ymd");
 $HORA_CREACION = date("His");
 
-$id = $database->insert("PERSONAL_TECNICO_EVENTOS", [
-	"ID_PERSONAL_TECNICO"=>$ID_PERSONAL_TECNICO,
+$id = $database->update("PERSONAL_TECNICO_EVENTOS", [
 	"EVENTO" => $EVENTO,
     "FECHA_INICIO" => $FECHA_INICIO,
     "HORA_INICIO" => "7:00",
@@ -78,11 +78,10 @@ $id = $database->insert("PERSONAL_TECNICO_EVENTOS", [
 	"FECHA_MODIFICACION" => $FECHA_CREACION,
 	"HORA_MODIFICACION" => $HORA_CREACION,
 	"USUARIO_MODIFICACION" => $ID_USUARIO_CREACION
-]);
+], ["ID"=>$ID]);
 valida_error_medoo_and_die();
 
 $respuesta['resultado']="ok";
-$respuesta['id']=$id;
 print_r(json_encode($respuesta));
 
 

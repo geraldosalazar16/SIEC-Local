@@ -20,6 +20,10 @@ $ID_PERSONAL_TECNICO_CALIF = $objeto->ID_PERSONAL_TECNICO_CALIF;
 valida_parametro_and_die($ID_PERSONAL_TECNICO_CALIF, "Es necesario seleccionar un auditor");
 $otros_grupos_del_auditor = $database->select("SG_AUDITORIA_GRUPOS", "ID", ["ID_PERSONAL_TECNICO_CALIF"=>$ID_PERSONAL_TECNICO_CALIF]);
 valida_error_medoo_and_die();
+//Modificacion Geraldo agregar eventos a la validacion
+$ID_PERSONAL_TECNICO = $database->get("PERSONAL_TECNICO_CALIFICACIONES", "ID_PERSONAL_TECNICO", ["ID"=>$ID_PERSONAL_TECNICO_CALIF]);
+valida_error_medoo_and_die();
+$eventos = $database->select("PERSONAL_TECNICO_EVENTOS", "*", ["ID_PERSONAL_TECNICO"=>$ID_PERSONAL_TECNICO]);
 
 $arreglo_fechas_yyyymmdd = array();
 for ($i=0; $i < count($FECHAS_ASIGNADAS) ; $i++) { 
@@ -27,6 +31,14 @@ for ($i=0; $i < count($FECHAS_ASIGNADAS) ; $i++) {
 	$fecha = date("Ymd", strtotime($fecha));
 	verifica_fecha_valida($fecha);
 
+	//Validar que la fecha no coincida conningun evento
+	for ($e=0; $i < count($eventos) ; $e++) {
+		$f_ini = date("Ymd",strtotime($eventos[$e]['FECHA_INICIO']));
+		$f_fin = date("Ymd",strtotime($eventos[$e]['FECHA_FIN']));
+		if ($fecha >= $f_ini && $fecha <= $f_fin) { 
+			imprime_error_and_die("La fecha " . $FECHAS_ASIGNADAS[$i] . " coincide con el evento ".$eventos[$e]['EVENTO']);
+		}
+	}
 	// Validar que todas las fechas pertenezcan a la auditoria
 	$existe_en_auditoria = $database->count("SG_AUDITORIA_FECHAS", ["AND"=>["ID_SG_AUDITORIA"=>$ID_SG_AUDITORIA,"FECHA"=>$fecha]]);
 	valida_error_medoo_and_die();

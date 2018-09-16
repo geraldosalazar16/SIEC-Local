@@ -36,7 +36,8 @@
           </form>
       </div>
       <div class="modal-footer">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="btnEliminarEvento">Eliminar</button>
         <button type="button" class="btn btn-primary" id="btnGuardarEvento">Guardar</button>
       </div>
     </div>

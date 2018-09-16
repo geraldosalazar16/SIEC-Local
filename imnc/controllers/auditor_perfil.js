@@ -1090,16 +1090,22 @@ function removeOptions(selectbox)
           const end = new Date(anhio_fin, mes_fin, dia_fin, 18, 30);
           eventos.push(
             {
-              title: 'Evento: ' + evento.EVENTO,
+              title: evento.EVENTO,
               start: start,
               end: end,
               color: '#8AECFA',
               allDay: false,
               descripcion: descripcion,
-              tipo: tipo
+              tipo: tipo,
+              fecha_inicio: evento.FECHA_INICIO,
+              fecha_fin: evento.FECHA_FIN,
+              id_evento: evento.ID
             }
           )         
         });
+        if ($('#calendar').fullCalendar() !== undefined) {
+          $('#calendar').fullCalendar('destroy');
+        }
         var calendar = $('#calendar').fullCalendar({
           customButtons: {
             newEvent: {
@@ -1107,6 +1113,7 @@ function removeOptions(selectbox)
                 click: function() { 
                   $("#btnGuardarEvento").attr("accion","insertar");
                   $("#modalCrearEventoTitulo").html("Insertar nuevo evento");
+                  $("#btnEliminarEvento").hide();
                   clear_modal_insertar_evento();
                   $("#modalCrearEvento").modal("show");
                 }
@@ -1124,17 +1131,30 @@ function removeOptions(selectbox)
           editable: false,
           eventBackgroundColor:"#3e5a23",
           events: eventos,
-          eventMouseover: function( event, jsEvent, view ) { 
-            notify(event.tipo,event.descripcion,'info')
+          eventClick: function( event, jsEvent, view ) { 
+            if (event.tipo == 'Evento') {
+              $("#btnGuardarEvento").attr("accion","editar");
+              $("#btnGuardarEvento").attr("id_evento",event.id_evento);
+              $("#btnEliminarEvento").show();
+              $("#modalCrearEventoTitulo").html("Editar evento");
+              fill_modal_insertar_evento(event);
+              $("#modalCrearEvento").modal("show");
+            }
+            //notify(event.tipo,event.descripcion,'info')
           }
         });
       });      
     });
   }
   function clear_modal_insertar_evento() {
-    $('evento').val("");
-    $('fecha_inicio').val("");
-    $('fecha_fin').val("");
+    $('#evento').val("");
+    $('#fecha_inicio').val("");
+    $('#fecha_fin').val("");
+  }
+  function fill_modal_insertar_evento(evento) {
+    $('#evento').val(evento.title);
+    $('#fecha_inicio').val(evento.fecha_inicio);
+    $('#fecha_fin').val(evento.fecha_fin);
   }
   function onCalendar() {
     $(document).ready(function () {
@@ -1171,6 +1191,44 @@ function removeOptions(selectbox)
           }
       });
     } else {
-
+      var id_evento = $("#btnGuardarEvento").attr("id_evento");
+      var evento = {
+        ID: id_evento,
+        EVENTO: $("#evento").val(),
+        FECHA_INICIO: $("#fecha_inicio").val(),
+        FECHA_FIN: $("#fecha_fin").val(),
+        ID_USUARIO:parseInt(sessionStorage.getItem("id_usuario"))
+      };
+      $.post(global_apiserver + "/personal_tecnico_eventos/update/", JSON.stringify(evento), function(respuesta){
+          respuesta = JSON.parse(respuesta);
+          if (respuesta.resultado == "ok") {
+            $("#modalCrearEvento").modal("hide");
+            notify("Éxito", "Se ha modificado el evento", "success");
+            draw_calendario(); 
+          }
+          else
+          {
+             notify("Error", respuesta.mensaje, "error");
+          }
+      });
     }
+  });
+  $("#btnEliminarEvento" ).click(function() {
+    var id_evento = $("#btnGuardarEvento").attr("id_evento");
+      var evento = {
+        ID: id_evento,
+        ID_USUARIO:parseInt(sessionStorage.getItem("id_usuario"))
+      };
+      $.post(global_apiserver + "/personal_tecnico_eventos/delete/", JSON.stringify(evento), function(respuesta){
+          respuesta = JSON.parse(respuesta);
+          if (respuesta.resultado == "ok") {
+            $("#modalCrearEvento").modal("hide");
+            notify("Éxito", "Se ha eliminado el evento", "success");
+            draw_calendario(); 
+          }
+          else
+          {
+             notify("Error", respuesta.mensaje, "error");
+          }
+      });
   });
